@@ -1,11 +1,26 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
 import { dashboards } from '../data/dashboards';
 import './Reporting.css';
 
 const Reporting: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem('favoriteDashboards') || '[]');
+    setFavorites(storedFavorites);
+  }, []);
+
+  const toggleFavorite = (dashboardId: string) => {
+    const updatedFavorites = favorites.includes(dashboardId)
+      ? favorites.filter(id => id !== dashboardId)
+      : [...favorites, dashboardId];
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favoriteDashboards', JSON.stringify(updatedFavorites));
+  };
 
   const categories = useMemo(() => {
     const allCategories = dashboards.map(d => d.category);
@@ -51,6 +66,7 @@ const Reporting: React.FC = () => {
               <th>Title</th>
               <th>Description</th>
               <th>Category</th>
+              <th>Favorite</th>
             </tr>
           </thead>
           <tbody>
@@ -60,11 +76,17 @@ const Reporting: React.FC = () => {
                   <td><Link to={`/reporting/${dashboard.id}`}>{dashboard.title}</Link></td>
                   <td>{dashboard.description}</td>
                   <td><span className={`category-tag category-${dashboard.category.toLowerCase()}`}>{dashboard.category}</span></td>
+                  <td>
+                    <Star
+                      className={`favorite-star ${favorites.includes(dashboard.id) ? 'favorited' : ''}`}
+                      onClick={() => toggleFavorite(dashboard.id)}
+                    />
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={3}>No dashboards match your criteria.</td>
+                <td colSpan={4}>No dashboards match your criteria.</td>
               </tr>
             )}
           </tbody>

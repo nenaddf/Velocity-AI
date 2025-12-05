@@ -86,3 +86,17 @@
 .category-marketing { background-color: #dc3545; }
 .category-executive { background-color: #4A5568; } /* Dark Slate Blue */
 
+.favorite-star {
+  color: #ccc; /* Default gray color */
+  cursor: pointer;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.favorite-star:hover {
+  transform: scale(1.2);
+}
+
+.favorite-star.favorited {
+  color: #ffc107; /* Yellow when favorited */
+}
+

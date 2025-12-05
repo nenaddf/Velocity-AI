@@ -63,8 +63,14 @@ const DashboardViewer: React.FC = () => {
     };
 
     if (dashboardId) {
+      // Set the single last viewed dashboard for sidebar navigation
       localStorage.setItem('lastViewedDashboardId', dashboardId);
       window.dispatchEvent(new Event('storageUpdated'));
+
+      // Update the list of recently viewed dashboards
+      const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewedDashboards') || '[]');
+      const updatedRecentlyViewed = [dashboardId, ...recentlyViewed.filter((id: string) => id !== dashboardId)].slice(0, 4); // Store last 4 unique
+      localStorage.setItem('recentlyViewedDashboards', JSON.stringify(updatedRecentlyViewed));
     }
     fetchEmbedToken();
   }, [dashboardId]);
