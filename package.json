@@ -18,7 +18,10 @@
     "powerbi-client-react": "^2.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.10.0"
+    "react-router-dom": "^7.10.0",
+    "@azure/msal-node": "^3.8.3",
+    "axios": "^1.13.2",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
