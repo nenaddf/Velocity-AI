@@ -1,11 +1,25 @@
 .welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
 }
 
 .welcome-subtitle {
-  font-size: 1.2rem;
-  color: #666;
-  margin-top: -0.5rem;
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 0.25rem; /* Reduced from default */
+}
+
+.welcome-header-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #e6f3ff; /* Pastel Blue */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #333;
 }
 
 .recent-dashboards, .favorite-dashboards {
