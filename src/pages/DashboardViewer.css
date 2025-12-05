@@ -1,0 +1,43 @@
+/* This container will hold both the header and the report */
+.dashboard-viewer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Prevent any child overflow */
+}
+
+.dashboard-header {
+  padding: 10px 20px; /* Give it some space */
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.back-button {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.dashboard-viewer-container .report-embed-class {
+  flex-grow: 1; /* This is the key: the report grows to fill remaining space */
+  width: 100%;
+  border: none; /* Ensure the iframe itself has no border */
+}
+
+.loading-text,
+.error-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.error-text {
+  color: #dc3545;
+}

@@ -1,0 +1,33 @@
+.sidebar {
+  width: 200px;
+  background-color: #333541;
+  padding-top: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: #A9A9B3;
+  text-decoration: none;
+  gap: 15px;
+  transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background-color: #40424F;
+  color: #FFFFFF;
+}
+
+.sidebar-logo {
+  width: 50%;
+  margin: 0 0 20px 20px;
+  display: block;
+}

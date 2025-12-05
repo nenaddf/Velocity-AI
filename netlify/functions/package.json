@@ -1,0 +1,13 @@
+{
+  "name": "pbi-embed-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions for Power BI embedding",
+  "main": "get-embed-token.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/msal-node": "^3.8.3",
+    "axios": "^1.13.2",
+    "node-fetch": "^3.3.2"
+  }
+}

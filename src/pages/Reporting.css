@@ -1,0 +1,88 @@
+.reporting-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.search-input {
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  flex-grow: 1;
+  min-width: 250px;
+  background-color: #fff;
+  color: #000;
+}
+
+.category-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.category-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-button:hover {
+  background-color: #e9f4ff;
+}
+
+.category-button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.dashboard-table-container {
+  padding-top: 20px;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.dashboard-table th, .dashboard-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dashboard-table th {
+  background-color: #f4f6f8;
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.category-tag {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.category-sales { background-color: #007bff; }
+.category-finance { background-color: #28a745; }
+.category-operations { background-color: #ffc107; color: #333;}
+.category-marketing { background-color: #dc3545; }
+.category-executive { background-color: #4A5568; } /* Dark Slate Blue */
+
