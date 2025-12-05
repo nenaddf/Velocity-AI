@@ -67,9 +67,12 @@ const DashboardViewer: React.FC = () => {
       localStorage.setItem('lastViewedDashboardId', dashboardId);
       window.dispatchEvent(new Event('storageUpdated'));
 
-      // Update the list of recently viewed dashboards
-      const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewedDashboards') || '[]');
-      const updatedRecentlyViewed = [dashboardId, ...recentlyViewed.filter((id: string) => id !== dashboardId)].slice(0, 4); // Store last 4 unique
+      // Update the list of recently viewed dashboards with timestamps
+      const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewedDashboards') || '[]') as { id: string; timestamp: number }[];
+      const updatedRecentlyViewed = [
+        { id: dashboardId, timestamp: Date.now() },
+        ...recentlyViewed.filter(item => item.id !== dashboardId)
+      ].slice(0, 4); // Store last 4 unique
       localStorage.setItem('recentlyViewedDashboards', JSON.stringify(updatedRecentlyViewed));
     }
     fetchEmbedToken();

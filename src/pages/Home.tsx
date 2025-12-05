@@ -7,7 +7,7 @@ import DashboardCard from '../components/DashboardCard';
 import './Home.css';
 
 const Home: React.FC = () => {
-  const [recentDashboards, setRecentDashboards] = useState<Dashboard[]>([]);
+  const [recentDashboards, setRecentDashboards] = useState<(Dashboard & { timeAgo: string })[]>([]);
   const [favoriteDashboards, setFavoriteDashboards] = useState<Dashboard[]>([]);
 
   const getFormattedDate = () => {
@@ -32,20 +32,39 @@ const Home: React.FC = () => {
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      return 'Good morning';
+      return 'Good morning 👋';
     }
     if (currentHour < 18) {
-      return 'Good afternoon';
+      return 'Good afternoon 👋';
     }
-    return 'Good evening';
+    return 'Good evening 👋';
+  };
+
+  const formatTimeAgo = (timestamp: number): string => {
+    const now = Date.now();
+    const seconds = Math.floor((now - timestamp) / 1000);
+
+    if (seconds < 5) return 'just now';
+    if (seconds < 60) return `${seconds} seconds ago`;
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+
+    const days = Math.floor(hours / 24);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
   };
 
   useEffect(() => {
     // Load recently viewed dashboards
-    const recentlyViewedIds = JSON.parse(localStorage.getItem('recentlyViewedDashboards') || '[]');
-    const filteredRecent = dashboards.filter(dashboard => recentlyViewedIds.includes(dashboard.id));
-    const orderedRecent = recentlyViewedIds.map((id: string) => filteredRecent.find(d => d.id === id)).filter(Boolean) as Dashboard[];
-    setRecentDashboards(orderedRecent);
+    const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewedDashboards') || '[]') as { id: string; timestamp: number }[];
+    const enrichedRecent = recentlyViewed.map(item => {
+      const dashboard = dashboards.find(d => d.id === item.id);
+      return dashboard ? { ...dashboard, timeAgo: formatTimeAgo(item.timestamp) } : null;
+    }).filter(Boolean) as (Dashboard & { timeAgo: string })[];
+    setRecentDashboards(enrichedRecent);
 
     // Load favorite dashboards
     const favoriteIds = JSON.parse(localStorage.getItem('favoriteDashboards') || '[]');
@@ -67,7 +86,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="recent-dashboards">
-        <h2 className="section-title"><Clock size={20} /> Recently visited</h2>
+        <h2 className="section-title"><Clock size={20} color="#007bff" /> Recently visited dashboards</h2>
         {recentDashboards.length > 0 ? (
           <div className="dashboard-grid">
             {recentDashboards.map(dashboard => (
@@ -82,7 +101,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="favorite-dashboards">
-        <h2 className="section-title"><Star size={20} /> Favorite dashboards</h2>
+        <h2 className="section-title"><Star size={20} color="#ffc107" /> Favorite dashboards</h2>
         {favoriteDashboards.length > 0 ? (
           <div className="dashboard-grid">
             {favoriteDashboards.map(dashboard => (

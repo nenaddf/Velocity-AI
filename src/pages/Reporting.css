@@ -84,7 +84,7 @@
 .category-finance { background-color: #28a745; }
 .category-operations { background-color: #ffc107; color: #333;}
 .category-marketing { background-color: #dc3545; }
-.category-executive { background-color: #4A5568; } /* Dark Slate Blue */
+.category-executive { background-color: #007bff; } /* Blue */
 
 .favorite-star {
   color: #ccc; /* Default gray color */
