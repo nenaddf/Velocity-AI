@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2 } from 'lucide-react';
-import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar, 
-  PieChart, Pie, Cell, ScatterChart, Scatter,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
-} from 'recharts';
+import ChartRenderer from './ChartRenderer';
 import './DifyChat.css';
 
 interface Message {
