@@ -62,18 +62,14 @@ const DifyChat: React.FC<DifyChatProps> = ({
         
         console.warn('Could not fetch views from API, using fallback');
         setAvailableViews([
-          'consolidated_ad_performance_view',
-          'consolidated_ad_performance_view_last_6_months',
-          'campaign_performance_view',
-          'product_performance_view'
+          'bizstory-no-vw-01-amazon_op_financial_events_summary_view',
+          'infinity-no-vw-01-amazon_op_financial_events_summary_view'
         ]);
       } catch (error) {
         console.error('Error fetching views:', error);
         setAvailableViews([
-          'consolidated_ad_performance_view',
-          'consolidated_ad_performance_view_last_6_months',
-          'campaign_performance_view',
-          'product_performance_view'
+          'bizstory-no-vw-01-amazon_op_financial_events_summary_view',
+          'infinity-no-vw-01-amazon_op_financial_events_summary_view'
         ]);
       } finally {
         setLoadingViews(false);
