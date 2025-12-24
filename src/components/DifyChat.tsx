@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './DifyChat.css';
 
 interface Message {
@@ -7,6 +8,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  chartData?: any;
 }
 
 interface DifyChatProps {
@@ -140,11 +142,28 @@ const DifyChat: React.FC<DifyChatProps> = ({
         setConversationId(data.conversation_id);
       }
 
+      // Try to parse chart data from the response
+      let chartData = null;
+      let cleanContent = data.answer || 'Sorry, I could not process your request.';
+      
+      // Look for JSON chart configuration in the response
+      const chartMatch = cleanContent.match(/\{[\s\S]*"chart_type"[\s\S]*\}/);
+      if (chartMatch) {
+        try {
+          chartData = JSON.parse(chartMatch[0]);
+          // Remove the chart JSON from the displayed content
+          cleanContent = cleanContent.replace(chartMatch[0], '').trim();
+        } catch (e) {
+          console.log('Could not parse chart data:', e);
+        }
+      }
+
       const assistantMessage: Message = {
         id: data.message_id || Date.now().toString(),
         role: 'assistant',
-        content: data.answer || 'Sorry, I could not process your request.',
-        timestamp: Date.now()
+        content: cleanContent,
+        timestamp: Date.now(),
+        chartData: chartData
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -258,6 +277,35 @@ const DifyChat: React.FC<DifyChatProps> = ({
             <div className="dify-message-content">
               {message.content}
             </div>
+            {message.chartData && message.chartData.chart_type === 'line' && (
+              <div className="dify-chart-container">
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={message.chartData.data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey={message.chartData.x_axis} 
+                      label={{ value: message.chartData.x_label || message.chartData.x_axis, position: 'insideBottom', offset: -5 }}
+                    />
+                    <YAxis 
+                      label={{ value: message.chartData.y_label || message.chartData.y_axis?.[0] || 'Value', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    {message.chartData.y_axis?.map((yKey: string, index: number) => (
+                      <Line 
+                        key={yKey}
+                        type="monotone" 
+                        dataKey={yKey} 
+                        stroke={['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index % 4]}
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
         ))}
         {loading && (
