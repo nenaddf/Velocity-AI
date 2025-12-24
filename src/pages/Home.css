@@ -1,0 +1,50 @@
+.welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 0.25rem; /* Reduced from default */
+}
+
+.welcome-header-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #e6f3ff; /* Pastel Blue */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.recent-dashboards, .favorite-dashboards {
+  margin-top: 2rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem; /* Space between icon and text */
+  margin-bottom: 1rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-card-link {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card-link:hover {
+  transform: translateY(-5px);
+}
