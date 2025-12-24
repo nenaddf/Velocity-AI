@@ -12,13 +12,11 @@ interface Message {
 interface DifyChatProps {
   apiUrl?: string;
   apiKey?: string;
-  appId?: string;
 }
 
 const DifyChat: React.FC<DifyChatProps> = ({
   apiUrl = '/.netlify/functions',
-  apiKey = '',
-  appId = ''
+  apiKey = ''
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
