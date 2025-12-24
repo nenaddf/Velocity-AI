@@ -129,7 +129,12 @@ const DifyChat: React.FC<DifyChatProps> = ({
       if (!response.ok) {
         const errorData = await response.json();
         console.error('API Error Response:', errorData);
-        throw new Error(errorData.message || `API request failed with status ${response.status}`);
+        console.error('Request was:', {
+          inputs: variables,
+          query: input,
+          conversation_id: conversationId
+        });
+        throw new Error(JSON.stringify(errorData) || `API request failed with status ${response.status}`);
       }
 
       const data = await response.json();

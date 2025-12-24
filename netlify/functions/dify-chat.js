@@ -37,13 +37,28 @@ export const handler = async (event, context) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Dify API Error:', errorText);
+      console.error('Request body was:', JSON.stringify({
+        inputs: inputs || {},
+        query: query,
+        response_mode: 'streaming',
+        conversation_id: conversation_id || '',
+        user: user || 'default-user'
+      }));
+      
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: errorText };
+      }
+      
       return {
         statusCode: response.status,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ error: errorText })
+        body: JSON.stringify(errorData)
       };
     }
 
