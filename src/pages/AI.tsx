@@ -1,10 +1,14 @@
 import React from 'react';
+import DifyChat from '../components/DifyChat';
+import './AI.css';
 
 const AI: React.FC = () => {
   return (
-    <div>
+    <div className="ai-container">
       <h1>AI Insights</h1>
-      <p>This page will contain AI-driven features and insights.</p>
+      <div className="chatbot-container">
+        <DifyChat />
+      </div>
     </div>
   );
 };
