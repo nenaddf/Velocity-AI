@@ -146,16 +146,42 @@ const DifyChat: React.FC<DifyChatProps> = ({
       let chartData = null;
       let cleanContent = data.answer || 'Sorry, I could not process your request.';
       
-      // Look for JSON chart configuration in the response
-      const chartMatch = cleanContent.match(/\{[\s\S]*"chart_type"[\s\S]*\}/);
+      console.log('Full AI response:', cleanContent);
+      
+      // Look for JSON chart configuration in the response - try multiple patterns
+      let chartMatch = cleanContent.match(/```json\s*(\{[\s\S]*?\})\s*```/);
       if (chartMatch) {
+        console.log('Found chart in code block:', chartMatch[1]);
         try {
-          chartData = JSON.parse(chartMatch[0]);
-          // Remove the chart JSON from the displayed content
-          cleanContent = cleanContent.replace(chartMatch[0], '').trim();
+          chartData = JSON.parse(chartMatch[1]);
+          if (chartData.chart_type) {
+            cleanContent = cleanContent.replace(chartMatch[0], '').trim();
+            console.log('Successfully parsed chart data:', chartData);
+          } else {
+            chartData = null;
+          }
         } catch (e) {
-          console.log('Could not parse chart data:', e);
+          console.log('Could not parse chart data from code block:', e);
         }
+      }
+      
+      // Try without code block markers
+      if (!chartData) {
+        chartMatch = cleanContent.match(/\{[\s\S]*?"chart_type"[\s\S]*?\}/);
+        if (chartMatch) {
+          console.log('Found chart without code block:', chartMatch[0]);
+          try {
+            chartData = JSON.parse(chartMatch[0]);
+            cleanContent = cleanContent.replace(chartMatch[0], '').trim();
+            console.log('Successfully parsed chart data:', chartData);
+          } catch (e) {
+            console.log('Could not parse chart data:', e);
+          }
+        }
+      }
+      
+      if (!chartData) {
+        console.log('No chart data found in response');
       }
 
       const assistantMessage: Message = {
