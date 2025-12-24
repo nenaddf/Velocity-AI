@@ -80,10 +80,10 @@ const DifyChat: React.FC<DifyChatProps> = ({
       }
     };
 
-    if (showSetup && apiKey) {
+    if (showSetup) {
       fetchAvailableViews();
     }
-  }, [showSetup, apiKey, apiUrl]);
+  }, [showSetup, apiUrl]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
