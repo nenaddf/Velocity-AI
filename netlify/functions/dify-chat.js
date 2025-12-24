@@ -28,24 +28,53 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         inputs: inputs || {},
         query: query,
-        response_mode: 'blocking',
+        response_mode: 'streaming',
         conversation_id: conversation_id || '',
         user: user || 'default-user'
       })
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      console.error('Dify API Error:', data);
+      const errorText = await response.text();
+      console.error('Dify API Error:', errorText);
       return {
         statusCode: response.status,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ error: errorText })
       };
+    }
+
+    // Read the streaming response and collect all chunks
+    const reader = response.body;
+    const chunks = [];
+    let fullAnswer = '';
+    let conversationId = '';
+    let messageId = '';
+
+    for await (const chunk of reader) {
+      const text = new TextDecoder().decode(chunk);
+      const lines = text.split('\n').filter(line => line.trim().startsWith('data:'));
+      
+      for (const line of lines) {
+        try {
+          const jsonStr = line.replace(/^data:\s*/, '');
+          const data = JSON.parse(jsonStr);
+          
+          if (data.event === 'message' || data.event === 'agent_message') {
+            fullAnswer += data.answer || '';
+            conversationId = data.conversation_id || conversationId;
+            messageId = data.message_id || messageId;
+          } else if (data.event === 'message_end') {
+            conversationId = data.conversation_id || conversationId;
+            messageId = data.id || messageId;
+          }
+        } catch (e) {
+          // Skip invalid JSON lines
+        }
+      }
     }
 
     return {
@@ -54,7 +83,11 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        answer: fullAnswer,
+        conversation_id: conversationId,
+        message_id: messageId
+      })
     };
 
   } catch (error) {
