@@ -355,7 +355,8 @@ const DifyChat: React.FC<DifyChatProps> = ({
               );
             })()}
           </div>
-        ))}
+          );
+        })}
         {loading && (
           <div className="dify-message dify-message-assistant">
             <div className="dify-message-content">
