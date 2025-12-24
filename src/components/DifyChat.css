@@ -91,11 +91,16 @@
 }
 
 .dify-chart-container {
-  margin-top: 16px;
-  padding: 16px;
+  margin-top: 12px;
+  padding: 20px;
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 80%;
+}
+
+.dify-message-assistant .dify-chart-container {
+  border: 1px solid #e5e7eb;
 }
 
 .dify-message-user .dify-message-content {

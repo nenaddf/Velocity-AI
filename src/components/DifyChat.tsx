@@ -302,9 +302,11 @@ const DifyChat: React.FC<DifyChatProps> = ({
           console.log('Rendering message:', message.id, 'Has chartData:', !!message.chartData, 'Chart type:', message.chartData?.chart_type);
           return (
           <div key={message.id} className={`dify-message dify-message-${message.role}`}>
-            <div className="dify-message-content">
-              {message.content}
-            </div>
+            {message.content && (
+              <div className="dify-message-content">
+                {message.content}
+              </div>
+            )}
             {message.chartData && message.chartData.chart_type === 'line' && (() => {
               // Transform data if x_axis and y_axis are arrays
               let chartData = message.chartData.data;
