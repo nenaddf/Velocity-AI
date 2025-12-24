@@ -298,30 +298,51 @@ const DifyChat: React.FC<DifyChatProps> = ({
             <p>Start a conversation with the AI assistant</p>
           </div>
         )}
-        {messages.map((message) => (
+        {messages.map((message) => {
+          console.log('Rendering message:', message.id, 'Has chartData:', !!message.chartData, 'Chart type:', message.chartData?.chart_type);
+          return (
           <div key={message.id} className={`dify-message dify-message-${message.role}`}>
             <div className="dify-message-content">
               {message.content}
             </div>
-            {message.chartData && message.chartData.chart_type === 'line' && (
+            {message.chartData && message.chartData.chart_type === 'line' && (() => {
+              // Transform data if x_axis and y_axis are arrays
+              let chartData = message.chartData.data;
+              let xAxisKey = message.chartData.x_axis;
+              let yAxisKeys = message.chartData.y_axis;
+              
+              if (Array.isArray(message.chartData.x_axis) && Array.isArray(message.chartData.y_axis)) {
+                // Transform array format to object format
+                chartData = message.chartData.x_axis.map((xVal: any, idx: number) => ({
+                  x: xVal,
+                  y: message.chartData.y_axis[idx]
+                }));
+                xAxisKey = 'x';
+                yAxisKeys = ['y'];
+                console.log('Transformed chart data:', chartData);
+              }
+              
+              return (
               <div className="dify-chart-container">
+                <h4 style={{ margin: '0 0 12px 0', color: '#1f2937' }}>{message.chartData.title || 'Chart'}</h4>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={message.chartData.data}>
+                  <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
-                      dataKey={message.chartData.x_axis} 
-                      label={{ value: message.chartData.x_label || message.chartData.x_axis, position: 'insideBottom', offset: -5 }}
+                      dataKey={xAxisKey}
+                      label={{ value: message.chartData.x_label || 'Date', position: 'insideBottom', offset: -5 }}
                     />
                     <YAxis 
-                      label={{ value: message.chartData.y_label || message.chartData.y_axis?.[0] || 'Value', angle: -90, position: 'insideLeft' }}
+                      label={{ value: message.chartData.y_label || 'Value', angle: -90, position: 'insideLeft' }}
                     />
                     <Tooltip />
                     <Legend />
-                    {message.chartData.y_axis?.map((yKey: string, index: number) => (
+                    {(Array.isArray(yAxisKeys) ? yAxisKeys : [yAxisKeys]).map((yKey: string, index: number) => (
                       <Line 
                         key={yKey}
                         type="monotone" 
-                        dataKey={yKey} 
+                        dataKey={yKey}
+                        name={message.chartData.y_label || yKey}
                         stroke={['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'][index % 4]}
                         strokeWidth={2}
                         dot={{ r: 4 }}
@@ -331,7 +352,8 @@ const DifyChat: React.FC<DifyChatProps> = ({
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            )}
+              );
+            })()}
           </div>
         ))}
         {loading && (
