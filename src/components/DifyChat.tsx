@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, MessageSquare, Trash2, Edit2, Check, X } from 'lucide-react';
 import ChartRenderer from './ChartRenderer';
 import './DifyChat.css';
 
@@ -9,6 +9,19 @@ interface Message {
   content: string;
   timestamp: number;
   chartData?: any;
+}
+
+interface Conversation {
+  id: string;
+  name: string;
+  messages: Message[];
+  conversationId: string;
+  timestamp: number;
+  variables: {
+    view: string;
+    model: string;
+    agent_persona: string;
+  };
 }
 
 interface DifyChatProps {
@@ -32,6 +45,11 @@ const DifyChat: React.FC<DifyChatProps> = ({
   });
   const [availableViews, setAvailableViews] = useState<string[]>([]);
   const [loadingViews, setLoadingViews] = useState(false);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string>('');
+  const [editingConversationId, setEditingConversationId] = useState<string>('');
+  const [editingName, setEditingName] = useState<string>('');
+  const [showHistory, setShowHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -214,10 +232,94 @@ const DifyChat: React.FC<DifyChatProps> = ({
     }
   };
 
+  // Load conversations from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('dify-conversations');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setConversations(parsed);
+      } catch (e) {
+        console.error('Failed to load conversations:', e);
+      }
+    }
+  }, []);
+
+  // Save current conversation to localStorage
+  const saveCurrentConversation = () => {
+    if (messages.length === 0) return;
+
+    const conversationName = messages[0]?.content.substring(0, 30) + (messages[0]?.content.length > 30 ? '...' : '');
+    const newConversation: Conversation = {
+      id: currentConversationId || Date.now().toString(),
+      name: conversationName,
+      messages,
+      conversationId,
+      timestamp: Date.now(),
+      variables
+    };
+
+    setConversations(prev => {
+      const existing = prev.findIndex(c => c.id === newConversation.id);
+      let updated;
+      if (existing >= 0) {
+        updated = [...prev];
+        updated[existing] = newConversation;
+      } else {
+        updated = [newConversation, ...prev];
+      }
+      localStorage.setItem('dify-conversations', JSON.stringify(updated));
+      return updated;
+    });
+
+    if (!currentConversationId) {
+      setCurrentConversationId(newConversation.id);
+    }
+  };
+
+  // Auto-save conversation when messages change
+  useEffect(() => {
+    if (messages.length > 0 && !showSetup) {
+      saveCurrentConversation();
+    }
+  }, [messages]);
+
+  const loadConversation = (conversation: Conversation) => {
+    setMessages(conversation.messages);
+    setConversationId(conversation.conversationId);
+    setVariables(conversation.variables);
+    setCurrentConversationId(conversation.id);
+    setShowSetup(false);
+    setShowHistory(false);
+  };
+
+  const deleteConversation = (id: string) => {
+    setConversations(prev => {
+      const updated = prev.filter(c => c.id !== id);
+      localStorage.setItem('dify-conversations', JSON.stringify(updated));
+      return updated;
+    });
+    if (currentConversationId === id) {
+      startNewChat();
+    }
+  };
+
+  const renameConversation = (id: string, newName: string) => {
+    setConversations(prev => {
+      const updated = prev.map(c => c.id === id ? { ...c, name: newName } : c);
+      localStorage.setItem('dify-conversations', JSON.stringify(updated));
+      return updated;
+    });
+    setEditingConversationId('');
+    setEditingName('');
+  };
+
   const startNewChat = () => {
     setMessages([]);
     setConversationId('');
+    setCurrentConversationId('');
     setShowSetup(true);
+    setShowHistory(false);
   };
 
   const handleStartChat = () => {
@@ -285,12 +387,91 @@ const DifyChat: React.FC<DifyChatProps> = ({
 
   return (
     <div className="dify-chat-container">
-      <div className="dify-chat-header">
-        <h2>AI Assistant</h2>
-        <button onClick={startNewChat} className="new-chat-btn">
-          New Chat
-        </button>
-      </div>
+      {/* Conversation History Sidebar */}
+      {showHistory && (
+        <div className="dify-history-sidebar">
+          <div className="dify-history-header">
+            <h3>Chat History</h3>
+            <button onClick={() => setShowHistory(false)} className="dify-close-history">
+              <X size={20} />
+            </button>
+          </div>
+          <div className="dify-history-list">
+            {conversations.length === 0 ? (
+              <div className="dify-history-empty">No saved conversations</div>
+            ) : (
+              conversations.map(conv => (
+                <div 
+                  key={conv.id} 
+                  className={`dify-history-item ${currentConversationId === conv.id ? 'active' : ''}`}
+                >
+                  {editingConversationId === conv.id ? (
+                    <div className="dify-history-edit">
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            renameConversation(conv.id, editingName);
+                          }
+                        }}
+                        className="dify-history-input"
+                        autoFocus
+                      />
+                      <button onClick={() => renameConversation(conv.id, editingName)} className="dify-icon-btn">
+                        <Check size={16} />
+                      </button>
+                      <button onClick={() => setEditingConversationId('')} className="dify-icon-btn">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="dify-history-content" onClick={() => loadConversation(conv)}>
+                        <MessageSquare size={16} />
+                        <span className="dify-history-name">{conv.name}</span>
+                      </div>
+                      <div className="dify-history-actions">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingConversationId(conv.id);
+                            setEditingName(conv.name);
+                          }} 
+                          className="dify-icon-btn"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(conv.id);
+                          }} 
+                          className="dify-icon-btn"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="dify-chat-main">
+        <div className="dify-chat-header">
+          <button onClick={() => setShowHistory(!showHistory)} className="history-toggle-btn">
+            <MessageSquare size={20} />
+          </button>
+          <h2>AI Assistant</h2>
+          <button onClick={startNewChat} className="new-chat-btn">
+            New Chat
+          </button>
+        </div>
       
       <div className="dify-chat-messages">
         {messages.length === 0 && (
@@ -341,6 +522,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
         >
           <Send size={20} />
         </button>
+      </div>
       </div>
     </div>
   );
