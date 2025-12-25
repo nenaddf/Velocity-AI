@@ -83,10 +83,12 @@
   display: flex;
   gap: 12px;
   animation: fadeIn 0.3s ease-in;
+  align-items: flex-start;
 }
 
 .dify-message-avatar {
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .dify-avatar {
@@ -131,14 +133,17 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 8px;
+  max-width: 100%;
 }
 
 .dify-message-user .dify-text-content-row {
   flex-direction: row;
+  justify-content: flex-end;
 }
 
 .dify-message-assistant .dify-text-content-row {
   flex-direction: row;
+  justify-content: flex-start;
 }
 
 @keyframes fadeIn {
@@ -206,7 +211,8 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 8px;
-  max-width: 85%;
+  width: 100%;
+  max-width: 95%;
   margin-top: 12px;
 }
 
