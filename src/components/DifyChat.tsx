@@ -669,42 +669,40 @@ const DifyChat: React.FC<DifyChatProps> = ({
                 </button>
               )}
             </div>
-          </div>
-          {message.chartData && message.chartData.chart_type && (
-            <div className="dify-message dify-message-assistant dify-chart-message">
-              <div className="dify-message-avatar">
-                <div className="dify-avatar dify-avatar-assistant">
-                  <Bot size={20} />
+            {message.chartData && message.chartData.chart_type && (
+              <div className="dify-message dify-message-assistant dify-chart-message">
+                <div className="dify-message-avatar">
+                  <div className="dify-avatar dify-avatar-assistant">
+                    <Bot size={20} />
+                  </div>
+                </div>
+                <div className="dify-chart-content-wrapper">
+                  <div className="dify-chart-wrapper">
+                    <ChartRenderer chartData={message.chartData} />
+                  </div>
+                  <div className="dify-chart-hover-actions">
+                    <button 
+                      onClick={() => copyToClipboard(JSON.stringify(message.chartData, null, 2), message.id + '-chart')}
+                      className="dify-copy-btn"
+                      title="Copy chart data"
+                    >
+                      {copiedMessageId === message.id + '-chart' ? (
+                        <Check size={16} />
+                      ) : (
+                        <Copy size={16} />
+                      )}
+                    </button>
+                    <button 
+                      onClick={() => exportChartToExcel(message.chartData, message.id)}
+                      className="dify-copy-btn"
+                      title="Export to Excel"
+                    >
+                      <FileDown size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="dify-chart-content-wrapper">
-                <div className="dify-chart-wrapper">
-                  <ChartRenderer chartData={message.chartData} />
-                </div>
-                <div className="dify-chart-hover-actions">
-                  <button 
-                    onClick={() => copyToClipboard(JSON.stringify(message.chartData, null, 2), message.id + '-chart')}
-                    className="dify-copy-btn"
-                    title="Copy chart data"
-                  >
-                    {copiedMessageId === message.id + '-chart' ? (
-                      <Check size={16} />
-                    ) : (
-                      <Copy size={16} />
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => exportChartToExcel(message.chartData, message.id)}
-                    className="dify-copy-btn"
-                    title="Export to Excel"
-                  >
-                    <FileDown size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-          <div style={{display: 'none'}}>
+            )}
           </div>
           );
         })}
