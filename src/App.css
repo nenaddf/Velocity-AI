@@ -10,13 +10,16 @@ body {
 .app-container {
   display: flex;
   height: 100vh;
+  overflow: hidden;
 }
 
 .main-content {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
   padding: 20px;
   background-color: #ffffff;
   color: #000000;
+  overflow: auto;
 }
 
 .main-content--no-padding {
