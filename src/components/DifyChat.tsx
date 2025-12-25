@@ -456,7 +456,6 @@ const DifyChat: React.FC<DifyChatProps> = ({
             )}
           </div>
         </div>
-      )}
 
       <div className="dify-chat-main">
         <div className="dify-chat-header">
