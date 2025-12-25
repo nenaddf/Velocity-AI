@@ -42,6 +42,26 @@
   white-space: nowrap;
 }
 
+.dify-export-pdf-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.dify-export-pdf-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
 .dify-chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -61,7 +81,50 @@
 .dify-message {
   margin-bottom: 16px;
   display: flex;
+  gap: 12px;
   animation: fadeIn 0.3s ease-in;
+}
+
+.dify-message-avatar {
+  flex-shrink: 0;
+}
+
+.dify-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dify-avatar-user {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.dify-avatar-assistant {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.dify-message-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dify-message-user .dify-message-wrapper {
+  justify-content: flex-end;
+}
+
+.dify-message-assistant .dify-message-wrapper {
+  justify-content: flex-start;
 }
 
 @keyframes fadeIn {
@@ -76,19 +139,85 @@
 }
 
 .dify-message-user {
-  justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
 .dify-message-assistant {
-  justify-content: flex-start;
+  flex-direction: row;
 }
 
 .dify-message-content {
-  width: 100%;
+  max-width: 70%;
   padding: 16px 20px;
   border-radius: 12px;
   word-wrap: break-word;
   white-space: pre-wrap;
+  width: fit-content;
+}
+
+.dify-copy-btn {
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.dify-message-assistant:hover .dify-copy-btn,
+.dify-message-user:hover .dify-copy-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dify-copy-btn:hover {
+  background: #f3f4f6;
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.dify-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.dify-chart-wrapper {
+  position: relative;
+  margin-top: 12px;
+}
+
+.dify-chart-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.dify-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.dify-export-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .dify-chart-container {

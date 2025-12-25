@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, MessageSquare, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Send, Loader2, MessageSquare, Trash2, Edit2, Check, X, Copy, Download, FileDown, User, Bot } from 'lucide-react';
 import ChartRenderer from './ChartRenderer';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 import './DifyChat.css';
 
 interface Message {
@@ -49,6 +51,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
   const [currentConversationId, setCurrentConversationId] = useState<string>('');
   const [editingConversationId, setEditingConversationId] = useState<string>('');
   const [editingName, setEditingName] = useState<string>('');
+  const [copiedMessageId, setCopiedMessageId] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -309,19 +312,87 @@ const DifyChat: React.FC<DifyChatProps> = ({
       return updated;
     });
     setEditingConversationId('');
-    setEditingName('');
   };
 
   const startNewChat = () => {
+    saveCurrentConversation();
+    const newConvId = `conv_${Date.now()}`;
+    setCurrentConversationId(newConvId);
     setMessages([]);
     setConversationId('');
-    setCurrentConversationId('');
     setShowSetup(true);
   };
 
   const handleStartChat = () => {
-    if (variables.view && variables.agent_persona) {
-      setShowSetup(false);
+    if (!variables.view) {
+      alert('Please select a BigQuery view');
+      return;
+    }
+    setShowSetup(false);
+  };
+
+  const copyToClipboard = async (text: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedMessageId(messageId);
+      setTimeout(() => {
+        setCopiedMessageId('');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('Failed to copy to clipboard');
+    }
+  };
+
+  const exportConversationToPDF = () => {
+    const doc = new jsPDF();
+    let yPosition = 20;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 20;
+    const lineHeight = 7;
+
+    doc.setFontSize(16);
+    doc.text('AI Chat Conversation', margin, yPosition);
+    yPosition += 15;
+
+    messages.forEach((message) => {
+      if (yPosition > pageHeight - 30) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text(message.role === 'user' ? 'You:' : 'AI:', margin, yPosition);
+      yPosition += lineHeight;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const lines = doc.splitTextToSize(message.content, 170);
+      lines.forEach((line: string) => {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(line, margin, yPosition);
+        yPosition += lineHeight;
+      });
+
+      yPosition += 5;
+    });
+
+    doc.save(`chat-conversation-${Date.now()}.pdf`);
+  };
+
+  const exportChartToExcel = (chartData: any, messageId: string) => {
+    try {
+      const ws = XLSX.utils.json_to_sheet(chartData.data || []);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Chart Data');
+      XLSX.writeFile(wb, `chart-data-${messageId}.xlsx`);
+    } catch (err) {
+      console.error('Failed to export chart:', err);
+      alert('Failed to export chart data');
     }
   };
 
@@ -490,6 +561,16 @@ const DifyChat: React.FC<DifyChatProps> = ({
       <div className="dify-chat-main">
         <div className="dify-chat-header">
           <h2>AI Assistant</h2>
+          {messages.length > 0 && (
+            <button 
+              onClick={exportConversationToPDF}
+              className="dify-export-pdf-btn"
+              title="Export conversation to PDF"
+            >
+              <Download size={18} />
+              <span>Export PDF</span>
+            </button>
+          )}
         </div>
       
       <div className="dify-chat-messages">
@@ -502,13 +583,64 @@ const DifyChat: React.FC<DifyChatProps> = ({
           console.log('Rendering message:', message.id, 'Has chartData:', !!message.chartData, 'Chart type:', message.chartData?.chart_type);
           return (
           <div key={message.id} className={`dify-message dify-message-${message.role}`}>
-            {message.content && (
-              <div className="dify-message-content">
-                {message.content}
-              </div>
-            )}
+            <div className="dify-message-avatar">
+              {message.role === 'user' ? (
+                <div className="dify-avatar dify-avatar-user">
+                  <User size={20} />
+                </div>
+              ) : (
+                <div className="dify-avatar dify-avatar-assistant">
+                  <Bot size={20} />
+                </div>
+              )}
+            </div>
+            <div className="dify-message-wrapper">
+              {message.role === 'user' && message.content && (
+                <button 
+                  onClick={() => copyToClipboard(message.content, message.id)}
+                  className="dify-copy-btn"
+                  title="Copy message"
+                >
+                  {copiedMessageId === message.id ? (
+                    <Check size={16} />
+                  ) : (
+                    <Copy size={16} />
+                  )}
+                </button>
+              )}
+              {message.content && (
+                <div className="dify-message-content">
+                  {message.content}
+                </div>
+              )}
+              {message.role === 'assistant' && message.content && (
+                <button 
+                  onClick={() => copyToClipboard(message.content, message.id)}
+                  className="dify-copy-btn"
+                  title="Copy message"
+                >
+                  {copiedMessageId === message.id ? (
+                    <Check size={16} />
+                  ) : (
+                    <Copy size={16} />
+                  )}
+                </button>
+              )}
+            </div>
             {message.chartData && message.chartData.chart_type && (
-              <ChartRenderer chartData={message.chartData} />
+              <div className="dify-chart-wrapper">
+                <ChartRenderer chartData={message.chartData} />
+                <div className="dify-chart-actions">
+                  <button 
+                    onClick={() => exportChartToExcel(message.chartData, message.id)}
+                    className="dify-export-btn"
+                    title="Export to Excel"
+                  >
+                    <FileDown size={16} />
+                    <span>Excel</span>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
           );
