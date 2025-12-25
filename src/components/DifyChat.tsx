@@ -386,10 +386,52 @@ const DifyChat: React.FC<DifyChatProps> = ({
 
   const exportChartToExcel = (chartData: any, messageId: string) => {
     try {
-      const ws = XLSX.utils.json_to_sheet(chartData.data || []);
+      let dataToExport: any[] = [];
+      
+      // Handle different chart data structures
+      if (chartData.chart_type === 'table') {
+        // For tables, convert columns and rows to objects
+        dataToExport = chartData.rows.map((row: any[]) => {
+          const obj: any = {};
+          chartData.columns.forEach((col: string, idx: number) => {
+            obj[col] = row[idx];
+          });
+          return obj;
+        });
+      } else if (chartData.data) {
+        dataToExport = chartData.data;
+      } else if (chartData.x_axis && chartData.y_axis) {
+        // For line/bar/area charts with x_axis and y_axis arrays
+        dataToExport = chartData.x_axis.map((x: any, idx: number) => ({
+          [chartData.x_label || 'X']: x,
+          [chartData.y_label || 'Y']: chartData.y_axis[idx]
+        }));
+      } else if (chartData.labels && chartData.values) {
+        // For pie/doughnut charts
+        dataToExport = chartData.labels.map((label: string, idx: number) => ({
+          Label: label,
+          Value: chartData.values[idx]
+        }));
+      } else if (chartData.datasets) {
+        // For multi-line or stacked bar charts
+        dataToExport = chartData.x_axis.map((x: any, idx: number) => {
+          const obj: any = { [chartData.x_label || 'X']: x };
+          chartData.datasets.forEach((dataset: any) => {
+            obj[dataset.label] = dataset.data[idx];
+          });
+          return obj;
+        });
+      }
+
+      if (dataToExport.length === 0) {
+        alert('No data available to export');
+        return;
+      }
+
+      const ws = XLSX.utils.json_to_sheet(dataToExport);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Chart Data');
-      XLSX.writeFile(wb, `chart-data-${messageId}.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, chartData.title || 'Chart Data');
+      XLSX.writeFile(wb, `${chartData.title || 'chart-data'}-${messageId}.xlsx`);
     } catch (err) {
       console.error('Failed to export chart:', err);
       alert('Failed to export chart data');
@@ -627,21 +669,42 @@ const DifyChat: React.FC<DifyChatProps> = ({
                 </button>
               )}
             </div>
-            {message.chartData && message.chartData.chart_type && (
-              <div className="dify-chart-wrapper">
-                <ChartRenderer chartData={message.chartData} />
-                <div className="dify-chart-actions">
+          </div>
+          {message.chartData && message.chartData.chart_type && (
+            <div className="dify-message dify-message-assistant dify-chart-message">
+              <div className="dify-message-avatar">
+                <div className="dify-avatar dify-avatar-assistant">
+                  <Bot size={20} />
+                </div>
+              </div>
+              <div className="dify-chart-content-wrapper">
+                <div className="dify-chart-wrapper">
+                  <ChartRenderer chartData={message.chartData} />
+                </div>
+                <div className="dify-chart-hover-actions">
+                  <button 
+                    onClick={() => copyToClipboard(JSON.stringify(message.chartData, null, 2), message.id + '-chart')}
+                    className="dify-copy-btn"
+                    title="Copy chart data"
+                  >
+                    {copiedMessageId === message.id + '-chart' ? (
+                      <Check size={16} />
+                    ) : (
+                      <Copy size={16} />
+                    )}
+                  </button>
                   <button 
                     onClick={() => exportChartToExcel(message.chartData, message.id)}
-                    className="dify-export-btn"
+                    className="dify-copy-btn"
                     title="Export to Excel"
                   >
                     <FileDown size={16} />
-                    <span>Excel</span>
                   </button>
                 </div>
               </div>
-            )}
+            </div>
+          )}
+          <div style={{display: 'none'}}>
           </div>
           );
         })}

@@ -187,46 +187,43 @@
   transform: scale(0.95);
 }
 
+.dify-chart-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  max-width: 85%;
+}
+
 .dify-chart-wrapper {
   position: relative;
-  margin-top: 12px;
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.dify-chart-actions {
+.dify-chart-hover-actions {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin-top: 12px;
-  justify-content: flex-end;
-}
-
-.dify-export-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  opacity: 0;
+  visibility: hidden;
   transition: all 0.2s;
 }
 
-.dify-export-btn:hover {
-  background: #5568d3;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+.dify-chart-message:hover .dify-chart-hover-actions {
+  opacity: 1;
+  visibility: visible;
 }
 
+
 .dify-chart-container {
-  margin-top: 12px;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
+  min-height: 400px;
 }
 
 .dify-message-assistant .dify-chart-container {
