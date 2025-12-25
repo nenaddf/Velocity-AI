@@ -118,9 +118,12 @@
 .dify-chat-input-container {
   display: flex;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 20px;
   background: white;
   border-top: 1px solid #e5e7eb;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .dify-chat-input {
