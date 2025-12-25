@@ -407,6 +407,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
             Start Chat
           </button>
         </div>
+        </div>
       </div>
     );
   }
