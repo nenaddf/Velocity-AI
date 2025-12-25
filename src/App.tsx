@@ -10,10 +10,11 @@ import './App.css';
 const App: React.FC = () => {
   const location = useLocation();
   const isReportPage = location.pathname.startsWith('/reporting/');
+  const isAIPage = location.pathname === '/ai';
   return (
     <div className="app-container">
       <Sidebar />
-      <main className={`main-content ${isReportPage ? 'main-content--no-padding' : ''}`}>
+      <main className={`main-content ${isReportPage || isAIPage ? 'main-content--no-padding' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/reporting" element={<Reporting />} />

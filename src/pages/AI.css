@@ -3,19 +3,23 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 .ai-container h1 {
-  margin: 0 0 20px 0;
-  padding: 20px 20px 0 20px;
+  margin: 0;
+  padding: 20px;
+  flex-shrink: 0;
 }
 
 .chatbot-container {
   flex: 1;
   display: flex;
   width: 100%;
-  min-height: 700px;
+  min-height: 0;
+  overflow: hidden;
   padding: 0 20px 20px 20px;
+  box-sizing: border-box;
 }
 
 .chatbot-iframe {
