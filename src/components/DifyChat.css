@@ -112,7 +112,7 @@
 .dify-message-wrapper {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   gap: 8px;
   flex: 1;
@@ -120,11 +120,11 @@
 }
 
 .dify-message-user .dify-message-wrapper {
-  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .dify-message-assistant .dify-message-wrapper {
-  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 @keyframes fadeIn {
@@ -192,7 +192,6 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 8px;
-  width: 100%;
   max-width: 85%;
   margin-top: 12px;
 }
@@ -215,7 +214,7 @@
   transition: all 0.2s;
 }
 
-.dify-chart-message:hover .dify-chart-hover-actions {
+.dify-message:hover .dify-chart-hover-actions {
   opacity: 1;
   visibility: visible;
 }
