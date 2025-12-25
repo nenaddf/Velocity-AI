@@ -228,7 +228,7 @@
   transition: all 0.2s;
 }
 
-.dify-chart-message:hover .dify-chart-hover-actions {
+.dify-message-assistant:hover .dify-chart-hover-actions {
   opacity: 1;
   visibility: visible;
 }
@@ -236,7 +236,7 @@
 
 .dify-chart-container {
   width: 100%;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .dify-message-assistant .dify-chart-container {

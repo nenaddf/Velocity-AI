@@ -33,7 +33,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       const yKey = Array.isArray(chartData.y_axis) ? 'y' : chartData.y_axis;
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xKey} label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
@@ -53,7 +53,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       const yKey = Array.isArray(chartData.y_axis) ? 'y' : chartData.y_axis;
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <AreaChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xKey} label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
@@ -73,7 +73,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       const yKey = Array.isArray(chartData.y_axis) ? 'y' : chartData.y_axis;
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xKey} label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
@@ -94,7 +94,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       }));
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart data={data} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" label={{ value: chartData.x_label || 'Value', position: 'insideBottom', offset: -5 }} />
@@ -115,7 +115,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       }));
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie data={data} cx="50%" cy="50%" labelLine={false} label={(entry) => entry.name} outerRadius={80} fill="#8884d8" dataKey="value">
               {data.map((_entry: any, index: number) => (
@@ -137,7 +137,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       }));
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie data={data} cx="50%" cy="50%" labelLine={false} label={(entry) => entry.name} innerRadius={60} outerRadius={80} fill="#8884d8" dataKey="value">
               {data.map((_entry: any, index: number) => (
@@ -154,7 +154,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
     // Scatter Chart
     if (chartType === 'scatter') {
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" dataKey="x" name={chartData.x_label || 'X'} label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
@@ -178,7 +178,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       });
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="x" label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
@@ -204,7 +204,7 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ chartData }) => {
       });
 
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="x" label={{ value: chartData.x_label || 'X', position: 'insideBottom', offset: -5 }} />
