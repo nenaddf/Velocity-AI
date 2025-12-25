@@ -49,7 +49,6 @@ const DifyChat: React.FC<DifyChatProps> = ({
   const [currentConversationId, setCurrentConversationId] = useState<string>('');
   const [editingConversationId, setEditingConversationId] = useState<string>('');
   const [editingName, setEditingName] = useState<string>('');
-  const [showHistory, setShowHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
