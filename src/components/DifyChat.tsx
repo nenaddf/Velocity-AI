@@ -637,54 +637,56 @@ const DifyChat: React.FC<DifyChatProps> = ({
               )}
             </div>
             <div className="dify-message-wrapper">
-              {message.role === 'user' && message.content && (
-                <button 
-                  onClick={() => copyToClipboard(message.content, message.id)}
-                  className="dify-copy-btn"
-                  title="Copy message"
-                >
-                  {copiedMessageId === message.id ? (
-                    <Check size={16} />
-                  ) : (
-                    <Copy size={16} />
-                  )}
-                </button>
-              )}
-              {message.content && (
-                <div className="dify-message-content">
-                  {message.content}
+              <div className="dify-text-content-row">
+                {message.role === 'user' && message.content && (
+                  <button 
+                    onClick={() => copyToClipboard(message.content, message.id)}
+                    className="dify-copy-btn"
+                    title="Copy message"
+                  >
+                    {copiedMessageId === message.id ? (
+                      <Check size={16} />
+                    ) : (
+                      <Copy size={16} />
+                    )}
+                  </button>
+                )}
+                {message.content && (
+                  <div className="dify-message-content">
+                    {message.content}
+                  </div>
+                )}
+                {message.role === 'assistant' && message.content && (
+                  <button 
+                    onClick={() => copyToClipboard(message.content, message.id)}
+                    className="dify-copy-btn"
+                    title="Copy message"
+                  >
+                    {copiedMessageId === message.id ? (
+                      <Check size={16} />
+                    ) : (
+                      <Copy size={16} />
+                    )}
+                  </button>
+                )}
+              </div>
+              {message.chartData && message.chartData.chart_type && (
+                <div className="dify-chart-content-wrapper">
+                  <div className="dify-chart-wrapper">
+                    <ChartRenderer chartData={message.chartData} />
+                  </div>
+                  <div className="dify-chart-hover-actions">
+                    <button 
+                      onClick={() => exportChartToExcel(message.chartData, message.id)}
+                      className="dify-copy-btn"
+                      title="Export to Excel"
+                    >
+                      <FileDown size={16} />
+                    </button>
+                  </div>
                 </div>
-              )}
-              {message.role === 'assistant' && message.content && (
-                <button 
-                  onClick={() => copyToClipboard(message.content, message.id)}
-                  className="dify-copy-btn"
-                  title="Copy message"
-                >
-                  {copiedMessageId === message.id ? (
-                    <Check size={16} />
-                  ) : (
-                    <Copy size={16} />
-                  )}
-                </button>
               )}
             </div>
-            {message.chartData && message.chartData.chart_type && (
-              <div className="dify-chart-content-wrapper">
-                <div className="dify-chart-wrapper">
-                  <ChartRenderer chartData={message.chartData} />
-                </div>
-                <div className="dify-chart-hover-actions">
-                  <button 
-                    onClick={() => exportChartToExcel(message.chartData, message.id)}
-                    className="dify-copy-btn"
-                    title="Export to Excel"
-                  >
-                    <FileDown size={16} />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
           );
         })}
