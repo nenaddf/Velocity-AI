@@ -328,11 +328,40 @@ const DifyChat: React.FC<DifyChatProps> = ({
   if (showSetup) {
     return (
       <div className="dify-chat-container">
-        <div className="dify-chat-header">
-          <h2>AI Assistant Setup</h2>
+        {/* Conversation History Sidebar - Always Visible */}
+        <div className="dify-history-sidebar">
+          <div className="dify-history-header">
+            <h3>Chat History</h3>
+            <button onClick={startNewChat} className="dify-new-chat-sidebar">
+              New Chat
+            </button>
+          </div>
+          <div className="dify-history-list">
+            {conversations.length === 0 ? (
+              <div className="dify-history-empty">No saved conversations</div>
+            ) : (
+              conversations.map(conv => (
+                <div 
+                  key={conv.id} 
+                  className={`dify-history-item ${currentConversationId === conv.id ? 'active' : ''}`}
+                  onClick={() => loadConversation(conv)}
+                >
+                  <div className="dify-history-content">
+                    <MessageSquare size={16} />
+                    <span className="dify-history-name">{conv.name}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-        <div className="dify-setup-form">
-          <h3>Configure your chat session</h3>
+
+        <div className="dify-chat-main">
+          <div className="dify-chat-header">
+            <h2>AI Assistant Setup</h2>
+          </div>
+          <div className="dify-setup-form">
+            <h3>Configure your chat session</h3>
           <div className="dify-form-group">
             <label>BigQuery View</label>
             {loadingViews ? (
