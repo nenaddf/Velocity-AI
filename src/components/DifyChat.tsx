@@ -289,7 +289,6 @@ const DifyChat: React.FC<DifyChatProps> = ({
     setVariables(conversation.variables);
     setCurrentConversationId(conversation.id);
     setShowSetup(false);
-    setShowHistory(false);
   };
 
   const deleteConversation = (id: string) => {
@@ -318,7 +317,6 @@ const DifyChat: React.FC<DifyChatProps> = ({
     setConversationId('');
     setCurrentConversationId('');
     setShowSetup(true);
-    setShowHistory(false);
   };
 
   const handleStartChat = () => {
@@ -386,15 +384,14 @@ const DifyChat: React.FC<DifyChatProps> = ({
 
   return (
     <div className="dify-chat-container">
-      {/* Conversation History Sidebar */}
-      {showHistory && (
-        <div className="dify-history-sidebar">
-          <div className="dify-history-header">
-            <h3>Chat History</h3>
-            <button onClick={() => setShowHistory(false)} className="dify-close-history">
-              <X size={20} />
-            </button>
-          </div>
+      {/* Conversation History Sidebar - Always Visible */}
+      <div className="dify-history-sidebar">
+        <div className="dify-history-header">
+          <h3>Chat History</h3>
+          <button onClick={startNewChat} className="dify-new-chat-sidebar">
+            New Chat
+          </button>
+        </div>
           <div className="dify-history-list">
             {conversations.length === 0 ? (
               <div className="dify-history-empty">No saved conversations</div>
@@ -463,13 +460,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
 
       <div className="dify-chat-main">
         <div className="dify-chat-header">
-          <button onClick={() => setShowHistory(!showHistory)} className="history-toggle-btn">
-            <MessageSquare size={20} />
-          </button>
           <h2>AI Assistant</h2>
-          <button onClick={startNewChat} className="new-chat-btn">
-            New Chat
-          </button>
         </div>
       
       <div className="dify-chat-messages">
