@@ -90,6 +90,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
       } catch (error) {
         console.error('Error fetching views:', error);
         setAvailableViews([
+          'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
           'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
           'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
         ]);
