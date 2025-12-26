@@ -76,7 +76,17 @@ const DifyChat: React.FC<DifyChatProps> = ({
           if (data.user_input_form) {
             const viewParam = data.user_input_form.find((param: any) => param.variable === 'view');
             if (viewParam && viewParam.options) {
-              setAvailableViews(viewParam.options);
+              // Ensure ad_data_master_v is always included
+              const apiViews = viewParam.options;
+              const requiredViews = [
+                'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
+                'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
+                'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
+              ];
+              
+              // Merge API views with required views, removing duplicates
+              const allViews = [...new Set([...requiredViews, ...apiViews])];
+              setAvailableViews(allViews);
               return;
             }
           }
@@ -84,6 +94,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
         
         console.warn('Could not fetch views from API, using fallback');
         setAvailableViews([
+          'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
           'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
           'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
         ]);
