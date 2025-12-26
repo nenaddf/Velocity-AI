@@ -164,7 +164,19 @@ const DifyChat: React.FC<DifyChatProps> = ({
           query: input,
           conversation_id: conversationId
         });
-        throw new Error(JSON.stringify(errorData) || `API request failed with status ${response.status}`);
+        
+        // Display more helpful error message to user
+        const errorMessage = errorData.message || errorData.error || 'API configuration error';
+        const debugInfo = errorData.debug_info ? `\nDebug: ${JSON.stringify(errorData.debug_info)}` : '';
+        
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `Sorry, there was an error processing your request. Please check your API configuration.\n\nError: ${errorMessage}${debugInfo}`,
+          timestamp: Date.now()
+        }]);
+        setLoading(false);
+        return;
       }
 
       const data = await response.json();

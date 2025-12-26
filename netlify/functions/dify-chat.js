@@ -37,6 +37,7 @@ export const handler = async (event, context) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Dify API Error:', errorText);
+      console.error('Response status:', response.status);
       console.error('Request body was:', JSON.stringify({
         inputs: inputs || {},
         query: query,
@@ -51,6 +52,13 @@ export const handler = async (event, context) => {
       } catch (e) {
         errorData = { error: errorText };
       }
+      
+      // Add more context to the error for debugging
+      errorData.debug_info = {
+        status: response.status,
+        inputs_sent: inputs,
+        view_sent: inputs?.view
+      };
       
       return {
         statusCode: response.status,
