@@ -25,3 +25,53 @@ body {
 .main-content--no-padding {
   padding: 0;
 }
+
+
+.loading-container,
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #4a1a16 0%, #1a0a09 70%, #000000 100%);
+}
+
+.login-logo {
+  width: 300px;
+  margin-top: 5rem; /* Increased margin to move logo down */
+}
+
+.login-container h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.login-container p {
+  font-size: 1.1rem;
+  color: #f8f9fa; /* Changed for contrast */
+  margin-bottom: 2rem;
+}
+
+.login-container button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: #FFFFFF;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.login-container button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
