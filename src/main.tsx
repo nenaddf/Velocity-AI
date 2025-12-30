@@ -14,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: window.location.origin
+        redirect_uri: window.location.origin,
+        audience: `https://${domain}/api/v2/`,
+        scope: 'openid profile email read:current_user_metadata'
       }}
     >
       <BrowserRouter>

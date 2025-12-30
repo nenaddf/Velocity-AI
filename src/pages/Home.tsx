@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Clock, Star, CalendarDays } from 'lucide-react';
 import { dashboards } from '../data/dashboards';
 import type { Dashboard } from '../data/dashboards';
@@ -7,6 +8,7 @@ import DashboardCard from '../components/DashboardCard';
 import './Home.css';
 
 const Home: React.FC = () => {
+  const { user } = useAuth0();
   const [recentDashboards, setRecentDashboards] = useState<(Dashboard & { timeAgo: string })[]>([]);
   const [favoriteDashboards, setFavoriteDashboards] = useState<Dashboard[]>([]);
 
@@ -32,12 +34,12 @@ const Home: React.FC = () => {
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      return 'Good morning 👋';
+      return 'Good morning';
     }
     if (currentHour < 18) {
-      return 'Good afternoon 👋';
+      return 'Good afternoon';
     }
-    return 'Good evening 👋';
+    return 'Good evening';
   };
 
   const formatTimeAgo = (timestamp: number): string => {
@@ -76,7 +78,7 @@ const Home: React.FC = () => {
     <div>
       <div className="welcome-header">
         <div className="welcome-header-text">
-          <h1>{getGreeting()}</h1>
+          <h1>{getGreeting()}, {user?.email} 👋</h1>
           <p className="welcome-subtitle">Welcome to your Velocity AI hub.</p>
         </div>
                 <div className="welcome-header-date">
@@ -86,7 +88,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="recent-dashboards">
-        <h2 className="section-title"><Clock size={20} color="#007bff" /> Recently visited dashboards</h2>
+        <h2 className="section-title"><Clock size={20} color="#f0b94a" /> Recently visited dashboards</h2>
         {recentDashboards.length > 0 ? (
           <div className="dashboard-grid">
             {recentDashboards.map(dashboard => (
@@ -101,7 +103,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="favorite-dashboards">
-        <h2 className="section-title"><Star size={20} color="#ffc107" /> Favorite dashboards</h2>
+        <h2 className="section-title"><Star size={20} color="#f0b94a" /> Favorite dashboards</h2>
         {favoriteDashboards.length > 0 ? (
           <div className="dashboard-grid">
             {favoriteDashboards.map(dashboard => (

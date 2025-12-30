@@ -34,7 +34,7 @@
 }
 
 .sidebar-footer button {
-  background-color: #75221c;
+  background-color: #4a1a16; /* Darker red */
   color: #FFFFFF;
   border: none;
   padding: 10px;
@@ -46,7 +46,7 @@
 }
 
 .sidebar-footer button:hover {
-  background-color: #932a23;
+  background-color: #75221c; /* Lighter red for hover */
 }
 
 
@@ -67,12 +67,12 @@
 }
 
 .sidebar ul li a:hover {
-  background-color: #4a1a16; /* Darker red for hover */
+  background-color: #75221c; /* Lighter red for hover */
   color: #FFFFFF;
 }
 
 .sidebar ul li a.active {
-  background-color: #75221c; /* Main red for active */
+  background-color: #4a1a16; /* Darker red for active */
   color: #FFFFFF;
 }
 

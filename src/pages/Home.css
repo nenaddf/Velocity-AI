@@ -5,6 +5,10 @@
   margin-bottom: 2rem;
 }
 
+.welcome-header h1 {
+  font-size: 2.25rem; /* Reduced from default h1 size */
+}
+
 .welcome-subtitle {
   font-size: 1.1rem;
   color: #555;
