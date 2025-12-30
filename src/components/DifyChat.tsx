@@ -79,6 +79,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
               // Ensure ad_data_master_v is always included
               const apiViews = viewParam.options;
               const requiredViews = [
+                'inf-velocity.sp_api.vw_sales_traffic_deduped',
                 'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
                 'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
                 'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
@@ -94,6 +95,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
         
         console.warn('Could not fetch views from API, using fallback');
         setAvailableViews([
+          'inf-velocity.sp_api.vw_sales_traffic_deduped',
           'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
           'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
           'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
@@ -101,6 +103,7 @@ const DifyChat: React.FC<DifyChatProps> = ({
       } catch (error) {
         console.error('Error fetching views:', error);
         setAvailableViews([
+          'inf-velocity.sp_api.vw_sales_traffic_deduped',
           'infinity-os-v00-01.dom_bi_playground.ad_data_master_v',
           'infinity-os-v00-01.dom_bi_playground.consolidated_ads_performance_view',
           'infinity-os-v00-01.amazon_sp.financial_events_summary_view'
