@@ -9,10 +9,12 @@ const DashboardViewer: React.FC = () => {
   const { dashboardId } = useParams<{ dashboardId: string }>();
   const [embedConfig, setEmbedConfig] = useState<models.IReportEmbedConfiguration | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isReportVisible, setIsReportVisible] = useState(false);
 
   useEffect(() => {
     const fetchEmbedToken = async () => {
       setLoading(true);
+      setIsReportVisible(false);
       const dashboard = dashboards.find(d => d.id === dashboardId);
 
       if (!dashboard) {
@@ -78,14 +80,19 @@ const DashboardViewer: React.FC = () => {
     fetchEmbedToken();
   }, [dashboardId]);
 
-  if (loading) {
-    return <div className="loading-text">Loading Report... Please wait.</div>;
+  const eventHandlers = new Map([
+    ['rendered', () => {
+      setIsReportVisible(true);
+    }],
+  ]);
+
+  if (loading && !embedConfig) {
+    return <div className="loading-text">Preparing Report...</div>;
   }
 
   if (!embedConfig) {
-    return <div className="error-text">Error: Could not load report configuration. Please check credentials and permissions.</div>;
+    return <div className="error-text">Error: Could not load report configuration.</div>;
   }
-
 
   return (
     <div className="dashboard-viewer-container">
@@ -95,9 +102,16 @@ const DashboardViewer: React.FC = () => {
           window.dispatchEvent(new Event('storageUpdated'));
         }}>&larr; Back to List</Link>
       </div>
+      
+      {/* Custom loading indicator - shown until Power BI report is fully rendered */}
+      {!isReportVisible && (
+        <div className="loading-text">Loading Report... Please wait.</div>
+      )}
+
       <PowerBIEmbed
         embedConfig={embedConfig}
-        cssClassName="report-embed-class"
+        eventHandlers={eventHandlers}
+        cssClassName={`report-embed-class ${isReportVisible ? 'visible' : 'hidden'}`}
       />
     </div>
   );

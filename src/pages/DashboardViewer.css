@@ -23,9 +23,20 @@
 }
 
 .dashboard-viewer-container .report-embed-class {
-  flex-grow: 1; /* This is the key: the report grows to fill remaining space */
   width: 100%;
-  border: none; /* Ensure the iframe itself has no border */
+  border: none;
+}
+
+.dashboard-viewer-container .report-embed-class.hidden {
+  visibility: hidden;
+  height: 0;
+  flex-grow: 0;
+  overflow: hidden;
+}
+
+.dashboard-viewer-container .report-embed-class.visible {
+  visibility: visible;
+  flex-grow: 1;
 }
 
 .loading-text,
