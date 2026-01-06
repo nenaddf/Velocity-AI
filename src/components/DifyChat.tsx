@@ -122,41 +122,38 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
     }
   }, [showSetup, apiUrl]);
 
-  // TODO: Re-enable this function when Supabase integration is fixed
-  // const ensureConversationExists = useCallback(async () => {
-  //   if (!isAuthenticated || !supabase || !user?.sub) return null;
+  const ensureConversationExists = useCallback(async () => {
+    if (!isAuthenticated || !supabase || !user?.sub) return null;
 
-  //   if (currentConversationId) {
-  //     // Conversation already exists, just update the timestamp
-  //     const { error } = await supabase
-  //       .from('conversations')
-  //       .update({ updated_at: new Date().toISOString() })
-  //       .eq('id', currentConversationId);
-  //     if (error) console.error('Error updating conversation timestamp:', error);
-  //     return currentConversationId;
-  //   }
+    if (currentConversationId) {
+      const { error } = await supabase
+        .from('conversations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', currentConversationId);
+      if (error) console.error('Error updating conversation timestamp:', error);
+      return currentConversationId;
+    }
 
-  //   // Create a new conversation
-  //   const conversationName = input.substring(0, 30) + (input.length > 30 ? '...' : '');
-  //   const { data, error } = await supabase
-  //     .from('conversations')
-  //     .insert({
-  //       user_id: user.sub,
-  //       name: conversationName,
-  //       variables,
-  //       conversation_id: '' // Dify's ID, will be updated later
-  //     })
-  //     .select('id')
-  //     .single();
+    const conversationName = input.substring(0, 30) + (input.length > 30 ? '...' : '');
+    const { data, error } = await supabase
+      .from('conversations')
+      .insert({
+        user_id: user.sub,
+        name: conversationName,
+        variables,
+        conversation_id: conversationId || ''
+      })
+      .select('id')
+      .single();
 
-  //   if (error) {
-  //     console.error('Error creating conversation:', error);
-  //     return null;
-  //   }
+    if (error) {
+      console.error('Error creating conversation:', error);
+      return null;
+    }
 
-  //   setCurrentConversationId(data.id);
-  //   return data.id;
-  // }, [currentConversationId, isAuthenticated, supabase, user?.sub, variables, input]);
+    setCurrentConversationId(data.id);
+    return data.id;
+  }, [currentConversationId, isAuthenticated, supabase, user?.sub, variables, input, conversationId]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -173,20 +170,17 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
     setLoading(true);
 
     try {
-      // TODO: Re-enable Supabase integration after fixing Auth0 authentication
-      // const convId = await ensureConversationExists();
-      // if (!convId || !supabase || !user?.sub) {
-      //   throw new Error('Could not create or find conversation.');
-      // }
-
-      // Save user message to Supabase
-      // const { error: userMessageError } = await supabase.from('messages').insert({
-      //   conversation_id: convId,
-      //   user_id: user.sub,
-      //   role: 'user',
-      //   content: input
-      // });
-      // if (userMessageError) console.error('Error saving user message:', userMessageError);
+      const convId = await ensureConversationExists();
+      
+      if (convId && supabase && user?.sub) {
+        const { error: userMessageError } = await supabase.from('messages').insert({
+          conversation_id: convId,
+          user_id: user.sub,
+          role: 'user',
+          content: input
+        });
+        if (userMessageError) console.error('Error saving user message:', userMessageError);
+      }
 
       console.log('Sending message with config:', {
         apiUrl,
@@ -294,16 +288,16 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
         chartData: chartData
       };
 
-      // TODO: Re-enable Supabase integration after fixing Auth0 authentication
-      // Save assistant message to Supabase
-      // const { error: assistantMessageError } = await supabase.from('messages').insert({
-      //   conversation_id: convId,
-      //   user_id: user.sub,
-      //   role: 'assistant',
-      //   content: cleanContent,
-      //   chart_data: chartData
-      // });
-      // if (assistantMessageError) console.error('Error saving assistant message:', assistantMessageError);
+      if (convId && supabase && user?.sub) {
+        const { error: assistantMessageError } = await supabase.from('messages').insert({
+          conversation_id: convId,
+          user_id: user.sub,
+          role: 'assistant',
+          content: cleanContent,
+          chart_data: chartData
+        });
+        if (assistantMessageError) console.error('Error saving assistant message:', assistantMessageError);
+      }
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
