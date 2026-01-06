@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useSupabase } from '../contexts/SupabaseContext';
 import { Send, Loader2, MessageSquare, Trash2, Edit2, Check, X, Copy, Download, FileDown, User, Bot } from 'lucide-react';
 import ChartRenderer from './ChartRenderer';
 import jsPDF from 'jspdf';
@@ -31,10 +33,9 @@ interface DifyChatProps {
   apiKey?: string;
 }
 
-const DifyChat: React.FC<DifyChatProps> = ({
-  apiUrl = '/.netlify/functions',
-  apiKey = ''
-}) => {
+const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', apiKey = '' }) => {
+  const { supabase } = useSupabase();
+  const { user, isAuthenticated } = useAuth0();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -121,6 +122,41 @@ const DifyChat: React.FC<DifyChatProps> = ({
     }
   }, [showSetup, apiUrl]);
 
+  const ensureConversationExists = useCallback(async () => {
+    if (!isAuthenticated || !supabase || !user?.sub) return null;
+
+    if (currentConversationId) {
+      // Conversation already exists, just update the timestamp
+      const { error } = await supabase
+        .from('conversations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', currentConversationId);
+      if (error) console.error('Error updating conversation timestamp:', error);
+      return currentConversationId;
+    }
+
+    // Create a new conversation
+    const conversationName = input.substring(0, 30) + (input.length > 30 ? '...' : '');
+    const { data, error } = await supabase
+      .from('conversations')
+      .insert({
+        user_id: user.sub,
+        name: conversationName,
+        variables,
+        conversation_id: '' // Dify's ID, will be updated later
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Error creating conversation:', error);
+      return null;
+    }
+
+    setCurrentConversationId(data.id);
+    return data.id;
+  }, [currentConversationId, isAuthenticated, supabase, user?.sub, variables, input]);
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -136,6 +172,20 @@ const DifyChat: React.FC<DifyChatProps> = ({
     setLoading(true);
 
     try {
+      const convId = await ensureConversationExists();
+      if (!convId || !supabase || !user?.sub) {
+        throw new Error('Could not create or find conversation.');
+      }
+
+      // Save user message to Supabase
+      const { error: userMessageError } = await supabase.from('messages').insert({
+        conversation_id: convId,
+        user_id: user.sub,
+        role: 'user',
+        content: input
+      });
+      if (userMessageError) console.error('Error saving user message:', userMessageError);
+
       console.log('Sending message with config:', {
         apiUrl,
         apiKey: apiKey.substring(0, 10) + '...',
@@ -242,6 +292,16 @@ const DifyChat: React.FC<DifyChatProps> = ({
         chartData: chartData
       };
 
+      // Save assistant message to Supabase
+      const { error: assistantMessageError } = await supabase.from('messages').insert({
+        conversation_id: convId,
+        user_id: user.sub,
+        role: 'assistant',
+        content: cleanContent,
+        chart_data: chartData
+      });
+      if (assistantMessageError) console.error('Error saving assistant message:', assistantMessageError);
+
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -264,93 +324,90 @@ const DifyChat: React.FC<DifyChatProps> = ({
     }
   };
 
-  // Load conversations from localStorage on mount
+  // Load conversations from Supabase on mount
   useEffect(() => {
-    const saved = localStorage.getItem('dify-conversations');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setConversations(parsed);
-      } catch (e) {
-        console.error('Failed to load conversations:', e);
+    const loadConversations = async () => {
+      if (!isAuthenticated || !supabase || !user?.sub) return;
+
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('user_id', user.sub)
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching conversations:', error);
+      } else {
+        setConversations(data || []);
       }
-    }
-  }, []);
-
-  // Save current conversation to localStorage
-  const saveCurrentConversation = () => {
-    if (messages.length === 0) return;
-
-    const conversationName = messages[0]?.content.substring(0, 30) + (messages[0]?.content.length > 30 ? '...' : '');
-    const newConversation: Conversation = {
-      id: currentConversationId || Date.now().toString(),
-      name: conversationName,
-      messages,
-      conversationId,
-      timestamp: Date.now(),
-      variables
     };
 
-    setConversations(prev => {
-      const existing = prev.findIndex(c => c.id === newConversation.id);
-      let updated;
-      if (existing >= 0) {
-        updated = [...prev];
-        updated[existing] = newConversation;
-      } else {
-        updated = [newConversation, ...prev];
-      }
-      localStorage.setItem('dify-conversations', JSON.stringify(updated));
-      return updated;
-    });
+    loadConversations();
+  }, [isAuthenticated, supabase, user?.sub]);
 
-    if (!currentConversationId) {
-      setCurrentConversationId(newConversation.id);
+
+
+  const loadConversation = useCallback(async (conversation: Conversation) => {
+    if (!supabase) return;
+
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversation.id)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching messages:', error);
+      setMessages([]);
+    } else {
+      setMessages(data || []);
     }
-  };
 
-  // Auto-save conversation when messages change
-  useEffect(() => {
-    if (messages.length > 0 && !showSetup) {
-      saveCurrentConversation();
-    }
-  }, [messages]);
-
-  const loadConversation = (conversation: Conversation) => {
-    setMessages(conversation.messages);
     setConversationId(conversation.conversationId);
     setVariables(conversation.variables);
     setCurrentConversationId(conversation.id);
     setShowSetup(false);
-  };
+  }, [supabase]);
 
-  const deleteConversation = (id: string) => {
-    setConversations(prev => {
-      const updated = prev.filter(c => c.id !== id);
-      localStorage.setItem('dify-conversations', JSON.stringify(updated));
-      return updated;
-    });
-    if (currentConversationId === id) {
-      startNewChat();
+  const deleteConversation = async (id: string) => {
+    if (!supabase) return;
+
+    const { error } = await supabase.from('conversations').delete().eq('id', id);
+
+    if (error) {
+      console.error('Error deleting conversation:', error);
+    } else {
+      setConversations(prev => prev.filter(c => c.id !== id));
+      if (currentConversationId === id) {
+        startNewChat();
+      }
     }
   };
 
-  const renameConversation = (id: string, newName: string) => {
-    setConversations(prev => {
-      const updated = prev.map(c => c.id === id ? { ...c, name: newName } : c);
-      localStorage.setItem('dify-conversations', JSON.stringify(updated));
-      return updated;
-    });
+  const renameConversation = async (id: string, newName: string) => {
+    if (!supabase) return;
+
+    const { data, error } = await supabase
+      .from('conversations')
+      .update({ name: newName, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error renaming conversation:', error);
+    } else {
+      setConversations(prev => prev.map(c => (c.id === id ? data : c)));
+    }
     setEditingConversationId('');
   };
 
   const startNewChat = () => {
-    saveCurrentConversation();
-    const newConvId = `conv_${Date.now()}`;
-    setCurrentConversationId(newConvId);
+    setCurrentConversationId('');
     setMessages([]);
     setConversationId('');
     setShowSetup(true);
+    setVariables({ view: '', model: 'GPT-4', agent_persona: '' });
   };
 
   const handleStartChat = () => {
