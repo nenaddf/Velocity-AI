@@ -13,7 +13,11 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const setAuthHeader = async () => {
       if (isAuthenticated) {
         try {
-          const token = await getAccessTokenSilently();
+          const token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: 'https://gaznjgjkftybxfvtogmn.supabase.co'
+            }
+          });
           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
           const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
