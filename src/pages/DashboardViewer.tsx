@@ -86,8 +86,8 @@ const DashboardViewer: React.FC = () => {
     }],
   ]);
 
-  if (loading && !embedConfig) {
-    return <div className="loading-text">Preparing Report...</div>;
+  if (!embedConfig && loading) {
+    return <div className="loading-text">Loading Report... Please wait.</div>;
   }
 
   if (!embedConfig) {
@@ -104,7 +104,7 @@ const DashboardViewer: React.FC = () => {
       </div>
       
       {/* Custom loading indicator - shown until Power BI report is fully rendered */}
-      {!isReportVisible && (
+      {!isReportVisible && !loading && (
         <div className="loading-text">Loading Report... Please wait.</div>
       )}
 

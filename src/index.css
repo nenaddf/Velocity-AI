@@ -64,3 +64,25 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Global CSS to hide Power BI trial banner in all embedded reports */
+iframe[src*="powerbi.com"] {
+  border: none !important;
+}
+
+/* Hide trial banner elements that may appear in Power BI iframes */
+.trialBanner,
+.trial-banner,
+.pbi-trial-banner,
+[class*="TrialBanner"],
+[class*="trialBanner"],
+[data-test-id*="trial"],
+[aria-label*="trial version"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
