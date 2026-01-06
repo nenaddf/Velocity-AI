@@ -170,16 +170,23 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
     setLoading(true);
 
     try {
+      console.log('Attempting to save conversation. Auth status:', { isAuthenticated, hasSupabase: !!supabase, userSub: user?.sub });
       const convId = await ensureConversationExists();
+      console.log('Conversation ID:', convId);
       
       if (convId && supabase && user?.sub) {
+        console.log('Saving user message to Supabase...');
         const { error: userMessageError } = await supabase.from('messages').insert({
           conversation_id: convId,
           user_id: user.sub,
           role: 'user',
           content: input
         });
-        if (userMessageError) console.error('Error saving user message:', userMessageError);
+        if (userMessageError) {
+          console.error('Error saving user message:', userMessageError);
+        } else {
+          console.log('User message saved successfully');
+        }
       }
 
       console.log('Sending message with config:', {

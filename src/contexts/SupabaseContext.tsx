@@ -24,6 +24,16 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               audience: 'https://gaznjgjkftybxfvtogmn.supabase.co'
             }
           });
+          
+          // Debug: decode and log token payload
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log('Auth0 Token Payload:', {
+            aud: payload.aud,
+            sub: payload.sub,
+            iss: payload.iss,
+            exp: new Date(payload.exp * 1000).toISOString()
+          });
+          
           setAccessToken(token);
         } catch (error) {
           console.error('Error getting access token', error);
