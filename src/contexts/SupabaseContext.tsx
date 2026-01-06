@@ -1,16 +1,22 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { supabase } from '../supabaseClient';
 
 const SupabaseContext = createContext<{ supabase: SupabaseClient | null }>({ supabase: null });
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Supabase URL and anon key are required.');
+}
+
 export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-  const [supabaseClient, setSupabaseClient] = useState<SupabaseClient | null>(supabase);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const setAuthHeader = async () => {
+    const getToken = async () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently({
@@ -18,33 +24,28 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               audience: 'https://gaznjgjkftybxfvtogmn.supabase.co'
             }
           });
-          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-          const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-          if (!supabaseUrl || !supabaseAnonKey) {
-            throw new Error('Supabase credentials not found in environment variables.');
-          }
-
-          // Create a new client instance with the auth header
-          const newClient = createClient(supabaseUrl, supabaseAnonKey, {
-            global: {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          });
-          setSupabaseClient(newClient);
+          setAccessToken(token);
         } catch (error) {
           console.error('Error getting access token', error);
-          setSupabaseClient(supabase); // Fallback to anon client
+          setAccessToken(null);
         }
       } else {
-        setSupabaseClient(supabase); // Use anon client if not authenticated
+        setAccessToken(null);
       }
     };
 
-    setAuthHeader();
+    getToken();
   }, [isAuthenticated, getAccessTokenSilently]);
+
+  const supabaseClient = useMemo(() => {
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: accessToken ? {
+          Authorization: `Bearer ${accessToken}`,
+        } : {},
+      },
+    });
+  }, [accessToken]);
 
   return (
     <SupabaseContext.Provider value={{ supabase: supabaseClient }}>
