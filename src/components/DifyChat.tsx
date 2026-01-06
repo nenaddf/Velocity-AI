@@ -172,19 +172,20 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
     setLoading(true);
 
     try {
-      const convId = await ensureConversationExists();
-      if (!convId || !supabase || !user?.sub) {
-        throw new Error('Could not create or find conversation.');
-      }
+      // TODO: Re-enable Supabase integration after fixing Auth0 authentication
+      // const convId = await ensureConversationExists();
+      // if (!convId || !supabase || !user?.sub) {
+      //   throw new Error('Could not create or find conversation.');
+      // }
 
       // Save user message to Supabase
-      const { error: userMessageError } = await supabase.from('messages').insert({
-        conversation_id: convId,
-        user_id: user.sub,
-        role: 'user',
-        content: input
-      });
-      if (userMessageError) console.error('Error saving user message:', userMessageError);
+      // const { error: userMessageError } = await supabase.from('messages').insert({
+      //   conversation_id: convId,
+      //   user_id: user.sub,
+      //   role: 'user',
+      //   content: input
+      // });
+      // if (userMessageError) console.error('Error saving user message:', userMessageError);
 
       console.log('Sending message with config:', {
         apiUrl,
@@ -292,15 +293,16 @@ const DifyChat: React.FC<DifyChatProps> = ({ apiUrl = '/.netlify/functions', api
         chartData: chartData
       };
 
+      // TODO: Re-enable Supabase integration after fixing Auth0 authentication
       // Save assistant message to Supabase
-      const { error: assistantMessageError } = await supabase.from('messages').insert({
-        conversation_id: convId,
-        user_id: user.sub,
-        role: 'assistant',
-        content: cleanContent,
-        chart_data: chartData
-      });
-      if (assistantMessageError) console.error('Error saving assistant message:', assistantMessageError);
+      // const { error: assistantMessageError } = await supabase.from('messages').insert({
+      //   conversation_id: convId,
+      //   user_id: user.sub,
+      //   role: 'assistant',
+      //   content: cleanContent,
+      //   chart_data: chartData
+      // });
+      // if (assistantMessageError) console.error('Error saving assistant message:', assistantMessageError);
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
