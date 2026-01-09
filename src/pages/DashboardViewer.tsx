@@ -49,6 +49,15 @@ const DashboardViewer: React.FC = () => {
           tokenType: models.TokenType.Embed,
           settings: {
             background: models.BackgroundType.Default,
+            panes: {
+              filters: {
+                visible: true,
+                expanded: false
+              },
+              pageNavigation: {
+                visible: true
+              }
+            },
             bars: {
               statusBar: {
                 visible: false
