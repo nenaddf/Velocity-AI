@@ -95,6 +95,9 @@ const DashboardViewer: React.FC = () => {
       <div className="loading-container">
         <img src={logo} alt="Loading..." className="loading-logo" />
         <p className="loading-text">Loading Report... Please wait.</p>
+        <div className="progress-bar-container">
+          <div className="progress-bar"></div>
+        </div>
       </div>
     );
   }
@@ -105,18 +108,24 @@ const DashboardViewer: React.FC = () => {
 
   return (
     <div className="dashboard-viewer-container">
-      <div className="dashboard-header">
-        <Link to="/reporting" className="back-button" onClick={() => {
-          localStorage.removeItem('lastViewedDashboardId');
-          window.dispatchEvent(new Event('storageUpdated'));
-        }}>&larr; Back to List</Link>
-      </div>
+      {/* Only show header when report is fully loaded */}
+      {isReportVisible && (
+        <div className="dashboard-header">
+          <Link to="/reporting" className="back-button" onClick={() => {
+            localStorage.removeItem('lastViewedDashboardId');
+            window.dispatchEvent(new Event('storageUpdated'));
+          }}>&larr; Back to List</Link>
+        </div>
+      )}
       
       {/* Custom loading indicator - shown until Power BI report is fully rendered */}
-      {!isReportVisible && !loading && (
+      {!isReportVisible && (
         <div className="loading-container">
           <img src={logo} alt="Loading..." className="loading-logo" />
           <p className="loading-text">Loading Report... Please wait.</p>
+          <div className="progress-bar-container">
+            <div className="progress-bar"></div>
+          </div>
         </div>
       )}
 
