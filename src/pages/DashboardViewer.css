@@ -41,7 +41,8 @@
 }
 
 /* Loading container with animated logo */
-.loading-container {
+.dashboard-viewer-container .loading-container, 
+.main-content > .loading-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,7 +61,7 @@
 .loading-text {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: #666666;
+  color: #333333; /* Darker text for white background */
   font-weight: 500;
   letter-spacing: 0.5px;
 }
