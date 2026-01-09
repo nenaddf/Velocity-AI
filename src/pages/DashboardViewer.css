@@ -39,21 +39,37 @@
   flex-grow: 1;
 }
 
-/* Hide Power BI trial banner and branding */
+/* Hide Power BI trial banner by cropping the top of the iframe */
+.dashboard-viewer-container {
+  position: relative;
+}
+
 .dashboard-viewer-container iframe {
   border: none;
 }
 
-/* Target and hide the trial version banner that appears in embedded reports */
-:global(.embedded-report-container .trial-banner),
-:global(.pbi-embedded-trial-banner),
-:global([class*="trialBanner"]),
-:global([class*="TrialBanner"]),
-:global(div[class*="trial"]:not(.loading-text)) {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  overflow: hidden !important;
+/* Create an overlay to hide the banner area at the top of the iframe */
+.dashboard-viewer-container .report-embed-class::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  background-color: #f3f2f1;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Alternative: Crop the iframe to hide the top banner area */
+.dashboard-viewer-container .report-embed-class {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-viewer-container .report-embed-class iframe {
+  margin-top: -45px;
+  height: calc(100% + 45px) !important;
 }
 
 .loading-text,
