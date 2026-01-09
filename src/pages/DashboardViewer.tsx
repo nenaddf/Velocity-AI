@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { PowerBIEmbed } from 'powerbi-client-react';
 import * as models from 'powerbi-models';
 import { dashboards } from '../data/dashboards';
+import logo from '../assets/Velocity-sellers-logo-1.webp';
 import './DashboardViewer.css';
 
 const DashboardViewer: React.FC = () => {
@@ -51,6 +52,9 @@ const DashboardViewer: React.FC = () => {
             bars: {
               statusBar: {
                 visible: false
+              },
+              actionBar: {
+                visible: true
               }
             }
           },
@@ -87,7 +91,12 @@ const DashboardViewer: React.FC = () => {
   ]);
 
   if (!embedConfig && loading) {
-    return <div className="loading-text">Loading Report... Please wait.</div>;
+    return (
+      <div className="loading-container">
+        <img src={logo} alt="Loading..." className="loading-logo" />
+        <p className="loading-text">Loading Report... Please wait.</p>
+      </div>
+    );
   }
 
   if (!embedConfig) {
@@ -105,7 +114,10 @@ const DashboardViewer: React.FC = () => {
       
       {/* Custom loading indicator - shown until Power BI report is fully rendered */}
       {!isReportVisible && !loading && (
-        <div className="loading-text">Loading Report... Please wait.</div>
+        <div className="loading-container">
+          <img src={logo} alt="Loading..." className="loading-logo" />
+          <p className="loading-text">Loading Report... Please wait.</p>
+        </div>
       )}
 
       <PowerBIEmbed
