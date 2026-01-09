@@ -104,9 +104,6 @@ const DashboardViewer: React.FC = () => {
       <div className="loading-container">
         <img src={logo} alt="Loading..." className="loading-logo" />
         <p className="loading-text">Loading Report... Please wait.</p>
-        <div className="progress-bar-container">
-          <div className="progress-bar"></div>
-        </div>
       </div>
     );
   }
@@ -132,9 +129,6 @@ const DashboardViewer: React.FC = () => {
         <div className="loading-container">
           <img src={logo} alt="Loading..." className="loading-logo" />
           <p className="loading-text">Loading Report... Please wait.</p>
-          <div className="progress-bar-container">
-            <div className="progress-bar"></div>
-          </div>
         </div>
       )}
 

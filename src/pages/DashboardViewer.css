@@ -10,6 +10,7 @@
 .dashboard-header {
   padding: 10px 20px; /* Give it some space */
   flex-shrink: 0; /* Prevent header from shrinking */
+  background-color: #f5f5f5;
 }
 
 .back-button {
@@ -59,28 +60,11 @@
 .loading-text {
   margin-top: 24px;
   font-size: 1.1rem;
-  color: #333333;
+  color: #666666;
   font-weight: 500;
   letter-spacing: 0.5px;
 }
 
-/* Progress bar */
-.progress-bar-container {
-  width: 250px;
-  height: 4px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  margin-top: 20px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 30%;
-  background: linear-gradient(90deg, #f97316, #fb923c);
-  border-radius: 4px;
-  animation: loading 1.5s infinite ease-in-out;
-}
 
 .error-text {
   display: flex;
@@ -103,14 +87,5 @@
   100% {
     transform: scale(1);
     opacity: 0.85;
-  }
-}
-
-@keyframes loading {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
   }
 }
